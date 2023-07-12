@@ -1,0 +1,110 @@
+<html>
+
+<body onload="studentData()">
+
+    <h1>Main page</h1>
+    </br>
+    </br>
+    </br>
+    <table border="3" id="tableId">
+        <tr>
+            <td><strong>FullName</strong></td>
+            <td><strong>Faculty</strong></td>
+            <td><strong>Grades</strong></td>
+            <td><strong>update</strong></td>
+            <td><strong>Delete</strong></td>
+        </tr>
+        <input type="button" id="createStudent" value="createStudent" onclick="createStudent()">
+
+    </table>
+    <button></button>
+    <script>
+        let tableDetails = document.getElementById("tableId");
+
+        function createStudent() {
+            location.href = "newStudent.html";
+        }
+
+        async function studentData() {
+            const resp = await fetch(`http://localhost:8000/api/students`);
+            if (resp.ok) {
+                let students = await resp.json();
+                console.log(students);
+                students.forEach((student) => {
+                    //    1) /////create elemet=====>
+                    let editTd = document.createElement("td");
+                    let deleteTd = document.createElement("td")
+                    let emailTd = document.createElement("td");
+                    let FacultyTd = document.createElement("td");
+                    let studentListRow = document.createElement("tr");
+                    let deleteEl = document.createElement("button")
+                    let editEl = document.createElement("input");
+                    let gradeTd = document.createElement("td");
+                    let gradeEl = document.createElement("input");
+                    // ======================delete
+                    deleteEl.innerHTML = "Delete";
+                    deleteEl.addEventListener("click", () => {
+                        deleteStudent(student._id);
+                        studentListRow.style.display = 'none'
+                    })
+                    //========================delete                   
+                    //  2) /////create Design=====>
+                    gradeEl.type = "button";
+                    gradeEl.value = "grade";
+                    gradeEl.addEventListener("click", () => {
+                        console.log(student);
+                        sessionStorage.setItem("studentEl", JSON.stringify(student._id));
+                        location.href = "grades.html";
+                    })
+                    let nameTd = document.createElement("a")
+                    nameTd.innerHTML = student.FullName;
+                    nameTd.href = "studentinfo.html";
+                    emailTd.innerText = student.Email
+                    FacultyTd.innerText = student.Faculty
+                    editEl.type = "button";
+                    editEl.value = "Edit";
+                    nameTd.addEventListener("click", () => {
+                        sessionStorage.setItem("studentEl", JSON.stringify(student));
+                    })
+                    editEl.addEventListener("click", () => {
+                        sessionStorage.setItem("studentEl", JSON.stringify(student));
+                        location.href = "update.html";
+                    })
+
+                    //  3) //////append=======>
+                    studentListRow.appendChild(nameTd);
+                    studentListRow.appendChild(FacultyTd);
+                    tableDetails.appendChild(studentListRow);
+                    studentListRow.appendChild(gradeTd);
+                    editTd.appendChild(gradeEl);
+                    studentListRow.appendChild(deleteTd);
+                    studentListRow.appendChild(editTd);
+                    deleteTd.appendChild(deleteEl);
+                    editTd.appendChild(editEl);
+
+
+                    async function deleteStudent(id) {
+                        console.log(`deleted,${id}`);
+                        let resp = await fetch(`http://localhost:8000/api/students/${id}`, {
+                            method: 'Delete',
+                        });
+                        if (resp.ok) {
+                            let res = await resp.json();
+                            console.log(res);
+                        }
+                        else {
+                            console.log("err");
+                        }
+                    }
+
+
+
+                })
+            }
+
+
+        }
+    </script>
+</body>
+
+</html>

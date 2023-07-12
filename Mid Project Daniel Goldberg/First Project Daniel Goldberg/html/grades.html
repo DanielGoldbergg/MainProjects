@@ -1,0 +1,136 @@
+<html>
+
+<body onload="DisplayGradesTable()">
+    <h3>student grades</h3>
+    <table border="3" id="tableEl">
+
+        Grade:<input type="text" id="addGradeId"><br>
+        Grade Date:<input type="date" id="addDateId"><br>
+        <input type="button" value="SubmtiGrade" onclick="addNewGrade()">
+
+        <div id="DivEdit">
+
+        </div>
+
+
+        <tr>
+            <td><strong>Grades date</strong></td>
+            <td><strong>Grades</strong></td>
+        </tr>
+        <script>
+
+            async function DisplayGradesTable() {
+                let id = JSON.parse(sessionStorage.getItem("studentEl"));
+                let resp = await fetch(`http://localhost:8000/api/students/${id}`)
+
+                console.log(resp)
+                if (resp.ok) {
+                    let data = await resp.json()
+                    console.log(data)
+                    data.Grades.forEach(grade => {
+                        let TableEl = document.getElementById('tableEl');
+                        let trEl = document.createElement('tr');
+                        TableEl.appendChild(trEl);
+                        let tdDate = document.createElement('td');
+                        let tdGrade = document.createElement('td');
+                        tdDate.innerText = grade.Gradedate.slice(0, 10);
+                        tdGrade.innerText = grade.Gradeheight;
+                        trEl.appendChild(tdDate);
+                        trEl.appendChild(tdGrade);
+                        let tdEditEl = document.createElement('td');
+                        let btnEdit = document.createElement('button')
+                        btnEdit.innerHTML = "edit";
+                        trEl.appendChild(tdEditEl);
+                        tdEditEl.appendChild(btnEdit);
+                        btnEdit.id = "edit";
+                        let id = data._id
+                        console.log(id);
+
+                        btnEdit.addEventListener("click", () => {
+                            let DateInputEl = document.createElement('input');
+                            DateInputEl.type = "date"
+                            let GradeInputEl = document.createElement('input')
+                            let buttonUpdate = document.createElement('button');
+                            buttonUpdate.innerText = "buttonUpdate";
+                            buttonUpdate.id = 'buttonUpdate';
+                            let divedit = document.getElementById('DivEdit');
+                            divedit.appendChild(DateInputEl)
+                            divedit.appendChild(GradeInputEl)
+                            divedit.appendChild(buttonUpdate)
+                            DateInputEl.value = grade.Gradedate.slice(0, 10);
+                            GradeInputEl.value = grade.Gradeheight;
+                            let gradeid = grade._id;
+                            buttonUpdate.addEventListener("click", async () => {
+                                let newGrade = {
+                                    Gradedate: DateInputEl.value, Gradeheight: GradeInputEl.value
+                                }
+                                console.log(id, gradeid)
+                                let Resp = await fetch(`http://localhost:8000/api/students/grade/${id}/${gradeid}`, {
+                                    method: 'put',
+                                    body: JSON.stringify(newGrade),
+                                    headers: { "Content-type": "application/json" }
+                                });
+                                if (Resp.ok) {
+                                    let res = await Resp.json();
+                                    console.log(res);
+                                    location.href = "grades.html";
+                                }
+                                else {
+                                    console.log("err");
+
+                                }
+
+
+                            })
+
+                        })
+
+
+                    })
+
+
+
+                }
+
+            }
+
+            async function addNewGrade() {
+                let id = JSON.parse(sessionStorage.getItem("studentEl"));
+                let resp = await fetch(`http://localhost:8000/api/students/${id}`)
+
+                console.log(resp)
+                if (resp.ok) {
+                    let data = await resp.json()
+                    let gradeDate = document.getElementById('addDateId').value;
+                    let gradeHeight = document.getElementById('addGradeId').value;
+
+                    let GradeJson = { Gradedate: gradeDate, Gradeheight: gradeHeight }
+                    data.Grades.push(GradeJson);
+                    console.log(data);
+                    let RESP = await fetch(`http://localhost:8000/api/students/grade/${id}`, {
+                        method: 'post',
+                        body: JSON.stringify(GradeJson),
+                        headers: { "Content-type": "application/json" }
+                    })
+                    if (RESP.ok) {
+                        alert("grade has been added");
+                        location.href = "grades.html"
+                    }
+                    else {
+                        console.log("error")
+                    }
+
+                }
+            }
+
+
+
+
+
+
+
+
+        </script>
+</body>
+
+</html>
