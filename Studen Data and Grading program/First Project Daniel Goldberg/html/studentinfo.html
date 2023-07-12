@@ -1,0 +1,36 @@
+<html>
+
+<body onload="DisplayGrades()" id="body">
+    <h1 id='h1elment'></h1>
+    <ul>
+        name:<li id="nameLi"></li><br>
+        Email<li id="emailLi"></li><br>
+        Faculty <li id="facultyLi"></li><br>
+        Birth Date<li id="BirthDate"></li><br>
+
+        <input type="button" value="Go back" onclick='back()' />
+    </ul>
+
+
+    <script>
+
+        let h1El = document.getElementById('h1elment');
+        let student = JSON.parse(sessionStorage.getItem("studentEl"));
+        h1El.innerText = "Personal details of the student " + student.FullName;
+        console.log(student);
+        document.getElementById("nameLi").innerText = student.FullName
+        document.getElementById("emailLi").innerText = student.Email
+        document.getElementById("facultyLi").innerText = student.Faculty
+        document.getElementById("BirthDate").innerText = student.BirthDate.slice(0, 10);
+
+
+        function back() {
+            location.href = "Mainpage.html"
+        }
+
+
+
+    </script>
+</body>
+
+</html>

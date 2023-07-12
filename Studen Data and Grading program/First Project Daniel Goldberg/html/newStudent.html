@@ -1,0 +1,45 @@
+<html>
+
+<body>
+    Fullname:<input type="text" id="nameinput"><br>
+    Email:<input type="text" id="emailinput"><br>
+    Faculty:<input type="text" id="facultyinput"><br>
+    BirthDate<input type="date" id=dateinput><br>
+    <input type="button" value="add" onclick="addstudent()">
+    <script>
+        async function addstudent() {
+            let fullName = document.getElementById('nameinput').value;
+            fullName.value = nameinput
+            console.log(fullName);
+            let email = document.getElementById('emailinput').value;
+            email.value = nameinput
+            console.log(email);
+            let faculty = document.getElementById('facultyinput').value;
+            faculty.value = nameinput
+            console.log(faculty);
+            let birthDate = document.getElementById('dateinput').value;
+            birthDate.value = nameinput
+            console.log(birthDate);
+            console.log("button press")
+            let Newstudent = { FullName: fullName, Email: email, Faculty: faculty, BirthDate: birthDate }
+            console.log("-----------------", Newstudent);
+            let resp = await fetch(`http://localhost:8000/api/students/`, {
+                method: 'post',
+                body: JSON.stringify(Newstudent),
+                headers: { "Content-type": "application/json" },
+            })
+            if (resp.ok) {
+                console.log("request complete! response", resp);
+                location.href = "Mainpage.html"
+
+            }
+            else {
+                console.log("not ok");
+            }
+
+        }
+
+    </script>
+</body>
+
+</html>
